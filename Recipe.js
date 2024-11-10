@@ -31,3 +31,4 @@ document.getElementById('add_recipe').addEventListener('click', () => {
         spiceLevel: document.getElementById('spice-level').value,
         cookingMethod: document.getElementById('cooking-method').value
     }
+});
