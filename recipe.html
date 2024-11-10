@@ -5,17 +5,24 @@ html>
 <script src="./recipe.js">
 
 </script>
-<form id="recipe form">
-<div id="recipe-form-section">
+<div id="recipe-List">
         <h2>Add Recipe</h2>
-        <form id="recipe-form">
-            <input type="text" id="recipe-title">
-            <input type="text" id="category">
-            <input type="text" id="ingredients">
-            <textarea id="steps" placeholder="Steps"></textarea>
-            <input type="number" id="cooking-time">
-            <input type="text" id="spice-level">
+        <form>
+            <label for="recipe-title"> Title: </label>
+            <input type="text" id="recipe-title"><br>
+            <label for="category"> category: </label>
+            <input type="text" id="category"><br>
+            <label for="ingredients">ingredients:</label>
+            <input type="text" id="ingredients"><br>
+            <label for="steps">steps:</label>
+            <input type="text" id="steps"><br>
+            <label for="cooking-time">cooking-time:</label>
+            <input type="number" id="cooking-time"><br>
+            <label for="spice-level">spice-leve:</label>
+            <input type="text" id="spice-level"><br>
+            <label for="cooking-method">cooking-method:</label>
             <input type="text" id="cooking-method">
-            <button type="submit">Add Recipe</button>
+            <button type="button">Add Recipe</button>
         </form>
-    </div>
+</div>
+</html>
