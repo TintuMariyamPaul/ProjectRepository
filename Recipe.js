@@ -30,5 +30,7 @@ document.getElementById('add_recipe').addEventListener('click', () => {
         cookingTime: document.getElementById('cooking-time').value,
         spiceLevel: document.getElementById('spice-level').value,
         cookingMethod: document.getElementById('cooking-method').value
-    }
+    };
+    recipe.push(newRecipe);
+    display();
 });
