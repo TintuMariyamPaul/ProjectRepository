@@ -14,6 +14,7 @@ function display() {
         ${recipes.cookingTime} min - 
         ${recipes.cookingMethod} - 
         ${recipes.spiceLevel}
+        <button onclick ="deleteRecipe(${index})">Delete</button>
     `;
     recipe_List = append(result);
     
@@ -30,7 +31,11 @@ document.getElementById('add_recipe').addEventListener('click', () => {
         cookingTime: document.getElementById('cooking-time').value,
         spiceLevel: document.getElementById('spice-level').value,
         cookingMethod: document.getElementById('cooking-method').value
+    
+    
     };
+
     recipe.push(newRecipe);
     display();
+    
 });
