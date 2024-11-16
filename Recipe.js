@@ -38,4 +38,9 @@ document.getElementById('add_recipe').addEventListener('click', () => {
     recipe.push(newRecipe);
     display();
     
+    
 });
+function deleteRecipe(index) {
+    recipe.splice(index,1);
+    display();
+}
