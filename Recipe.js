@@ -34,7 +34,6 @@ document.getElementById('add_recipe').addEventListener('click', () => {
     
     
     };
-    if()
 
     recipe.push(newRecipe);
     display();
