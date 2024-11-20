@@ -1,7 +1,11 @@
-let recipe = []
+const apiUrl = 'http://localhost:3000/recipes';
 
-function display() {
-    const recipe_List = document.getElementById('recipelist');
+function displayrecipies() {
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(recipe => {
+            const recipe_List = document.getElementById('recipelist');
+            recipe_List.innerHTML = ''; 
     recipe_List.innerHTML = '';
 
     recipe.forEach((recipes,index) => {
@@ -16,10 +20,10 @@ function display() {
         ${recipes.spiceLevel}
         <button onclick ="deleteRecipe(${index})">Delete</button>
     `;
-    recipe_List = append(result);
+    recipe_List = appendchild(result);
     
     });
-}
+});
 
 document.getElementById('add_recipe').addEventListener('click', () => {
 
@@ -34,13 +38,16 @@ document.getElementById('add_recipe').addEventListener('click', () => {
     
     
     };
-
-    recipe.push(newRecipe);
-    display();
-    
-    
+fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(newRecipe)
+}).then(() => displayrecipies())   
 });
-function deleteRecipe(index) {
-    recipe.splice(index,1);
-    display();
+
+function deleteRecipe(id) {
+    fetch(`${apiUrl}/${id}`, { method: 'DELETE' })
+        .then(() => displayrecipies());
 }
+displayrecipies();
+
