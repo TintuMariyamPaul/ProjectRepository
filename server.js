@@ -63,15 +63,7 @@ app.post('/recipes', (req, res) => {
 
         res.status(201).json({ message: 'Recipe added successfully!' });
         connection.end(); 
-    });
-
-
-
-
-
-
-
-    
+    });    
 });
 const PORT = 3000;
 app.listen(PORT, () => {
