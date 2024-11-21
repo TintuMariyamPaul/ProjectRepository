@@ -44,10 +44,3 @@ fetch(apiUrl, {
     body: JSON.stringify(newRecipe)
 }).then(() => displayrecipies())   
 });
-
-function deleteRecipe(id) {
-    fetch(`${apiUrl}/${id}`, { method: 'DELETE' })
-        .then(() => displayrecipies());
-}
-displayrecipies();
-

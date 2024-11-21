@@ -1,50 +1,79 @@
 const express = require('express');
-const mysql = require('mysql2');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const mysql = require('mysql2');
 
 const app = express();
-app.use(cors());
+app.use(express.static('public'));
 app.use(bodyParser.json());
-
-const db = mysql.createConnection({
-    host = 'localhost',
-    user = 'root',
-    password = 'Tintu@1998',
-    database: 'kerala_cuisine'
-
-});
-db.connect(err => {
-    if (err) {
-        console.error('Database connection failed:', err);
-        return;
-    }
-    console.log('Connected to MySQL');
+app.get('/', (req, res) => {
+    res.json({ info: 'Server is up and running!' });
 });
 
-app.post('/recipes',(req,res) => {
 
-    const { title, category, ingredients,steps,cookingTime,spiceLevel,cookingMethod} = req.body;
-        if(!title || !category ||!ingredients ||!steps||!cookingTime||!spiceLevel || !cookingMethod){
-            res.status(400).send({error:'All fields are required!'});
-            return;
+const mysqlConnection = {
+    host: 'localhost',
+    user: 'root',
+    password: 'Tintu@1998', 
+    database: 'kerala_cuisine',
+    port: 3306
+};
+
+
+app.get('/recipes', (req, res) => {
+    const connection = mysql.createConnection(mysqlConnection);
+    const query = 'SELECT * FROM recipes';
+
+    connection.connect(err => {
+        if (err) {
+            console.error('Database connection error:', err);
+            return res.status(500).json({ error: 'Database connection failed' });
+        }
+
+        connection.query(query, (err, results) => {
+            if (err) {
+                console.error('Query error:', err);
+                return res.status(500).json({ error: 'Failed to fetch recipes' });
+            }
+
+            res.status(200).json(results);
+            connection.end(); 
+        });
+    });
+});
+
+app.post('/recipes', (req, res) => {
+    const connection = mysql.createConnection(mysqlConnection);
+    const { title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod } = req.body;
+
+    // Validate request body
+    if (!title || !category || !ingredients || !steps || !cookingTime || !spiceLevel || !cookingMethod) {
+        return res.status(400).json({ error: 'All fields are required!' });
     }
+
     const query = `
         INSERT INTO recipes (title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod) 
         VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
-    db.query(query, [title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod], (err, result) => {
+
+    connection.query(query, [title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod], (err, results) => {
         if (err) {
             console.error('Error adding recipe:', err);
-            res.status(500).send({ error: 'Failed to add recipe' });
-            return;
+            return res.status(500).json({ error: 'Failed to add recipe' });
         }
-        res.send({ message: 'Recipe added successfully!' });
-    });
-});
 
+        res.status(201).json({ message: 'Recipe added successfully!' });
+        connection.end(); 
+    });
+
+
+
+
+
+
+
+    
+});
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
-

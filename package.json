@@ -4,5 +4,15 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "mysql2": "^3.11.4"
-  }
+  },
+  "name": "projectrepository",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Recipe.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
