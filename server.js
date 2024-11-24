@@ -63,7 +63,39 @@ app.post('/recipes', (req, res) => {
 
         res.status(201).json({ message: 'Recipe added successfully!' });
         connection.end(); 
-    });    
+    });
+});
+app.get('/search', (req, res) => {
+        const connection = mysql.createConnection(mysqlConnection);
+        const {title,category} = req.query;
+
+        let query = 'SELECT * FROM recipes WHERE 1=1';
+        const querysearch = [];
+
+        if(title){
+            query += 'AND title LIKE?';
+            querysearch.push('%${title}%');
+        }
+        if(category){
+            query += 'AND category = ?';
+            querysearch.push(category); 
+        }
+        connection.connect(err => {
+            if (err) {
+                console.error('Database connection error:', err);
+                return res.status(500).json({ error: 'Database connection failed' });
+            }
+    
+            connection.query(query, querysearch, (err, results) => {
+                if (err) {
+                    console.error('Query error:', err);
+                    return res.status(500).json({ error: 'Failed to search recipes' });
+                }
+    
+                res.status(200).json(results);
+                connection.end(); 
+            });
+        });
 });
 const PORT = 3000;
 app.listen(PORT, () => {
