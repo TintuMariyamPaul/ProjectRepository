@@ -1,5 +1,4 @@
-const apiUrl = 'http://localhost:3000/recipes';
-
+const apiUrl = 'https://super-duper-space-computing-machine-5rpwg6grv6j246pj-3000.app.github.dev/';
 function displayrecipies() {
     fetch(apiUrl)
         .then(response => response.json())
@@ -25,8 +24,8 @@ function displayrecipies() {
     });
 });
 
-document.getElementById('add_recipe').addEventListener('click', () => {
-
+function addrecipe() {  
+    
     const newRecipe = {
         title: document.getElementById('recipe-title').value,
         category: document.getElementById('category').value,
@@ -34,13 +33,12 @@ document.getElementById('add_recipe').addEventListener('click', () => {
         steps: document.getElementById('steps').value,
         cookingTime: document.getElementById('cooking-time').value,
         spiceLevel: document.getElementById('spice-level').value,
-        cookingMethod: document.getElementById('cooking-method').value
-    
-    
-    };
-fetch(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newRecipe)
-}).then(() => displayrecipies())   
-});
+        cookingMethod: document.getElementById('cooking-method').value   
+};
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newRecipe)
+
+       .then(() => displayrecipies()) 
+    }) 
