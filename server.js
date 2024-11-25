@@ -173,8 +173,36 @@ app.put('/recipes/:id', (req, res) => {
             });
         });
     });
-});   
-    
+});
+
+app.delete('/recipes/:id', (req, res) => {
+    const connection = mysql.createConnection(mysqlConnection);
+    const { id } = req.params;
+    connection.connect(err => {
+        if (err) {
+            console.error('Database connection error:', err);
+            return res.status(500).json({ error: 'Database connection failed' });
+        }
+
+        const query = 'DELETE FROM recipes WHERE id = ?';
+
+        connection.query(query, [id], (err, results) => {
+            if (err) {
+                console.error('Query error:', err);
+                return res.status(500).json({ error: 'Failed to delete recipe' });
+            }
+
+            if (results.affectedRows === 0) {
+                return res.status(404).json({ message: 'Recipe not found' });
+            }
+
+            res.status(200).json({ message: 'Recipe deleted successfully!' });
+            connection.end();
+        });
+    });
+});
+
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
