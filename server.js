@@ -73,7 +73,7 @@ app.get('/search', (req, res) => {
         const querysearch = [];
 
         if(title){
-            query += 'AND title LIKE?';
+            query += 'AND title LIKE ? ';
             querysearch.push('%${title}%');
         }
         if(category){
@@ -87,16 +87,94 @@ app.get('/search', (req, res) => {
             }
     
             connection.query(query, querysearch, (err, results) => {
-                if (err) {
+            if (err) {
                     console.error('Query error:', err);
                     return res.status(500).json({ error: 'Failed to search recipes' });
                 }
+                if (results.length === 0) {
+                    return res.status(404).json({ message: 'No recipes found matching your criteria.' });
     
                 res.status(200).json(results);
-                connection.end(); 
+                connection.end();
+                } 
             });
         });
 });
+
+app.put('/recipes/:id', (req, res) => {
+        const connection = mysql.createConnection(mysqlConnection);
+        const { id } = req.params;
+        const { title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod } = req.body;
+        if (!title && !category && !ingredients && !steps && !cookingTime && !spiceLevel && !cookingMethod){
+            return res.status(400).json({ error: 'need to update the feild' });
+        }
+    let query = 'UPDATE recipes SET ';
+    const updates = [];
+    const params = [];
+    if (title) {
+        updates.push('title = ?');
+        params.push(title);
+    }
+    if (category) {
+        updates.push('category = ?');
+        params.push(category);
+    }
+    if (category) {
+        updates.push('category = ?');
+        params.push(category);
+    }
+    if (ingredients) {
+        updates.push('ingredients = ?');
+        params.push(ingredients);
+    }
+    if (steps) {
+        updates.push('steps = ?');
+        params.push(steps);
+    }
+    if (cookingTime) {
+        updates.push('cookingTime = ?');
+        params.push(cookingTime);
+    }
+    if (spiceLevel) {
+        updates.push('spiceLevel = ?');
+        params.push(spiceLevel);
+    }
+    if (cookingMethod) {
+        updates.push('cookingMethod = ?');
+        params.push(cookingMethod);
+    }
+    query += updates.join(', ') + ' WHERE id = ?';
+    params.push(id);
+
+    connection.connect(err => {
+        if (err) {
+            console.error('Database connection error:', err);
+            return res.status(500).json({ error: 'Database connection failed' });
+        }
+        connection.connect(err => {
+            if (err) {
+                console.error('Database connection error:', err);
+                return res.status(500).json({ error: 'Database connection failed' });
+            }
+    
+            connection.query(query, params, (err, results) => {
+                if (err) {
+                    console.error('Query error:', err);
+                    return res.status(500).json({ error: 'Failed to update recipe' });
+                }
+    
+                if (results.affectedRows === 0) {
+                    
+                    return res.status(404).json({ message: 'Recipe not found' });
+                }
+    
+                res.status(200).json({ message: 'Recipe updated successfully!' });
+                connection.end();
+            });
+        });
+    });
+});   
+    
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
