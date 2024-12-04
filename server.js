@@ -1,10 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql2');
+const connection = require('./db');
+require('dotenv').config();
+
 
 const app = express();
 app.use(express.static('public'));
 app.use(bodyParser.json());
+
 app.get('/', (req, res) => {
     res.json({ info: 'Server is up and running!' });
 });
@@ -13,7 +16,7 @@ app.get('/', (req, res) => {
 const mysqlConnection = {
     host: 'localhost',
     user: 'root',
-    password: 'Tintu@1998', 
+    password: process.env.DB_PASSWORD ||'Tintu@1998', 
     database: 'kerala_cuisine',
     port: 3306
 };
@@ -45,7 +48,6 @@ app.post('/recipes', (req, res) => {
     const connection = mysql.createConnection(mysqlConnection);
     const { title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod } = req.body;
 
-    // Validate request body
     if (!title || !category || !ingredients || !steps || !cookingTime || !spiceLevel || !cookingMethod) {
         return res.status(400).json({ error: 'All fields are required!' });
     }
@@ -70,15 +72,15 @@ app.get('/search', (req, res) => {
         const {title,category} = req.query;
 
         let query = 'SELECT * FROM recipes WHERE 1=1';
-        const querysearch = [];
+        const params = [];
 
         if(title){
             query += 'AND title LIKE ? ';
-            querysearch.push('%${title}%');
+            params.push(`%${title}%`);;
         }
         if(category){
             query += 'AND category = ?';
-            querysearch.push(category); 
+            params.push(category); 
         }
         connection.connect(err => {
             if (err) {
@@ -86,7 +88,7 @@ app.get('/search', (req, res) => {
                 return res.status(500).json({ error: 'Database connection failed' });
             }
     
-            connection.query(query, querysearch, (err, results) => {
+            connection.query(query, params, (err, results) => {
             if (err) {
                     console.error('Query error:', err);
                     return res.status(500).json({ error: 'Failed to search recipes' });
@@ -203,7 +205,7 @@ app.delete('/recipes/:id', (req, res) => {
 });
 
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
