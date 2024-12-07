@@ -41,40 +41,34 @@ app.post('/recipes', async (req, res) => {
 });
 
 app.get('/search',async (req, res) => {
-        const {title,category} = req.query;
+    try {
+        const { title, category } = req.query;
+
+        let query = 'SELECT * FROM recipes WHERE 1=1';
+        const params = [];
+
         if (title) {
-            title = title.replace(/["']/g, ''); 
+            query += ' AND title LIKE ?';
+            params.push(`%${title}%`);
         }
-    
         if (category) {
-            category = category.replace(/["']/g, '');
+            query += ' AND category = ?';
+            params.push(category);
         }
-        try {
-            let query = 'SELECT * FROM recipes WHERE 1=1 ';
-            const params = [];
 
-            if (title) {
-                query += 'AND title LIKE ? ';
-                params.push(`%${title}%`);
-            }
-            if (category) {
-                query += 'AND category = ? ';
-                params.push(category);
-            }
-            console.log('Query:', query); 
-            console.log('Params:', params); 
-            const [results] = await db.query(query, params);
+        const [results] = await db.query(query, params);
 
-            if (results.length === 0) {
-                return res.status(404).json({ message: 'No recipes found matching your criteria.' });
-            }
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'No recipes found matching your criteria.' });
+        }
 
-            res.status(200).json(results);
-        } catch (err) {
+        res.status(200).json(results);
+    } catch (err) {
         console.error('Query error:', err);
         res.status(500).json({ error: 'Failed to search recipes' });
-        }
+    }
 });
+
 app.put('/recipes/:serialNumber', async (req, res) => {
         const { serialNumber } = req.params;
         const { title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod } = req.body;
