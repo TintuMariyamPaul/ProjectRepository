@@ -1,5 +1,5 @@
 const apiUrl = 'http://localhost:3000/recipes';
-
+let editingRecipeId = null;
 
 function displayRecipes() {
     fetch(apiUrl)
@@ -80,9 +80,11 @@ function editRecipe(id, title, category, ingredients, steps, cookingTime, spiceL
     document.getElementById('spice-level').value = spiceLevel;
     document.getElementById('cooking-method').value = cookingMethod;
     
+    editingRecipeId = id;
+    
     document.getElementById('add-recipe-btn').classList.add('hidden');
     document.getElementById('edit-recipe-btn').classList.remove('hidden');
-    editingRecipeId = id;
+    
 }
 
 function updateRecipe() {

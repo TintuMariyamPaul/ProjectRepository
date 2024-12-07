@@ -14,7 +14,7 @@ app.get('/', async (req, res) => {
 
 app.get('/recipes', async (req, res) => {
     try {
-        const [results] = await db.query('SELECT * FROM recipes');
+        const [results] = await db.query('SELECT * FROM recipes ORDER BY serialNumber');
         res.status(200).json(results);
     } catch (err) {
         console.error('Query error:', err);
@@ -29,17 +29,17 @@ app.post('/recipes', async (req, res) => {
     }
 
     try {
-        const query = `
-            INSERT INTO recipes (title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `;
-        await db.query(query, [title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod]);
-        res.status(201).json({ message: 'Recipe added successfully!' });
-    } catch (err) {
-        console.error('Query error:', err.message, err.sql);
-        res.status(500).json({ error: 'Failed to search recipes', details: err.message });
+        await db.query(
+            'INSERT INTO recipes (title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod]
+        );
+        res.status(201).json({ message: 'Recipe added successfully.' });
+    } catch (error) {
+        console.error('Error adding recipe:', error);
+        res.status(500).json({ error: 'Failed to add recipe.' });
     }
 });
+
 app.get('/search',async (req, res) => {
         const {title,category} = req.query;
         if (title) {
@@ -75,8 +75,8 @@ app.get('/search',async (req, res) => {
         res.status(500).json({ error: 'Failed to search recipes' });
         }
 });
-app.put('/recipes/:id', async (req, res) => {
-        const { id } = req.params;
+app.put('/recipes/:serialNumber', async (req, res) => {
+        const { serialNumber } = req.params;
         const { title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod } = req.body;
         if (!title && !category && !ingredients && !steps && !cookingTime && !spiceLevel && !cookingMethod){
             return res.status(400).json({ error: 'need to update the feild' });
@@ -84,78 +84,63 @@ app.put('/recipes/:id', async (req, res) => {
     let query = 'UPDATE recipes SET ';
     const updates = [];
     const params = [];
-    if (title) {
-        updates.push('title = ?');
-        params.push(title);
-    }
-    if (category) {
-        updates.push('category = ?');
-        params.push(category);
-    }
-    if (ingredients) {
-        updates.push('ingredients = ?');
-        params.push(ingredients);
-    }
-    if (steps) {
-        updates.push('steps = ?');
-        params.push(steps);
-    }
-    if (cookingTime) {
-        updates.push('cookingTime = ?');
-        params.push(cookingTime);
-    }
-    if (spiceLevel) {
-        updates.push('spiceLevel = ?');
-        params.push(spiceLevel);
-    }
-    if (cookingMethod) {
-        updates.push('cookingMethod = ?');
-        params.push(cookingMethod);
-    }
-    query += updates.join(', ') + ' WHERE id = ?';
-    params.push(id);
-
-    try {
-        const [results] = await db.query(query, params);
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ message: 'Recipe not found' });
+    try{
+        if (title) {
+            updates.push('title = ?');
+            params.push(title);
         }
+        if (category) {
+            updates.push('category = ?');
+            params.push(category);
+        }
+        if (ingredients) {
+            updates.push('ingredients = ?');
+            params.push(ingredients);
+        }
+        if (steps) {
+            updates.push('steps = ?');
+            params.push(steps);
+        }
+        if (cookingTime) {
+            updates.push('cookingTime = ?');
+            params.push(cookingTime);
+        }
+        if (spiceLevel) {
+            updates.push('spiceLevel = ?');
+            params.push(spiceLevel);
+        }
+        if (cookingMethod) {
+            updates.push('cookingMethod = ?');
+            params.push(cookingMethod);
+        }
+        query += updates.join(', ') + ' WHERE serialNumber = ?';
+        params.push(serialNumber);
+
+        const [result] = await db.query(query, params);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Recipe not found.' });
+        }
+
         res.status(200).json({ message: 'Recipe updated successfully!' });
     } catch (err) {
         console.error('Query error:', err);
-        res.status(500).json({ error: 'Failed to update recipe' });
+        res.status(500).json({ error: 'Failed to update recipe.' });
     }
 });
 
-app.delete('/recipes/:id', async (req, res) => {
-    const { id } = req.params;
-    const query = 'DELETE FROM recipes WHERE id = ?';
+app.delete('/recipes/:serialNumber', async (req, res) => {
+    const { serialNumber } = req.params;
+    
     try {
-        const [results] = await db.query(query, [id]);
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ message: 'Recipe not found' });
+        const [result] = await db.query('DELETE FROM recipes WHERE serialNumber = ?', [serialNumber]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Recipe not found.' });
         }
-        res.status(200).json({ message: 'Recipe deleted successfully!' });
-    } catch (err) {
-        console.error('Query error:', err);
-        res.status(500).json({ error: 'Failed to delete recipe' });
+        res.status(200).send({ message: 'Recipe deleted and IDs reordered.' });
+    }  catch (error) {
+        console.error('Error deleting and reordering recipes:', error);
+        res.status(500).send({ error: 'Failed to delete and reorder recipes.' });
     }
-});
-
-app.get('/recipes', (req, res) => {
-    const { title, category } = req.query;
-    let filteredRecipes = recipes;
-
-    if (title) {
-        filteredRecipes = filteredRecipes.filter(recipe =>
-            recipe.title.toLowerCase().includes(title.toLowerCase())
-        );
-    }
-    if (category) {
-        filteredRecipes = filteredRecipes.filter(recipe => recipe.category === category);
-    }
-
-    res.json(filteredRecipes);
 });
 
 const PORT = process.env.PORT || 3000;
