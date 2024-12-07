@@ -1,5 +1,8 @@
-<html>
+<html lang="en"> 
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> kerala_cuisine </title>
     <style>
         body {
@@ -31,13 +34,17 @@
         .hidden {
             display: none;
         }
+        h1, h2, h3 {
+            color: #333;
+        }
     
     </style>
 </head>
 <body>
     <h1>Kerala Cuisine Recipe Manager</h1>
     <div id="recipe-List">
-        <h2>Add Recipe</h2>
+        <h2>Add Recipe or Edit Recipe</h2>
+        <form id="recipe-form">
             <label for="recipe-title"> Title: </label>
             <input type="text" id="recipe-title"><br>
             
@@ -62,8 +69,9 @@
             <label for="cooking-method">cooking-method:</label>
             <input type="text" id="cooking-method">
             
-            <button type="button" id = "add-recipe-btn">Add Recipe</button>
-        
+            <button type="button" id="add-recipe-btn">Add Recipe</button>
+            <button type="button" id="edit-recipe-btn" class="hidden">Update Recipe</button>
+        </form>
     </div>
     <div id="recipe-search-section">
         <h3>Search Recipes</h3>
@@ -79,19 +87,16 @@
         <button id="search-btn">Search</button>
     </div>
     <div>
-        <h2>Recipe Options</h2>
-
+        <h2>All Recipes</h2>
         <button id="display-all-btn">Display All</button>
+        <div id="recipe-list-container"></div>
     </div>
 
-    <div id="recipe-list-container" style="display: none;">
-        <h4>Recipe List</h4>
-        <div id="recipelist"></div>
+    <div>
+        <h2>Search Results</h2>
+        <div id="search-results"></div>
     </div>
-    <div id="search-results" style="display: none;">
-        <h3>Search Results</h3>
-        <div id="search-list"></div>
-    </div>
+
     <script src="Recipe.js"></script>
 </body>
 </html>
