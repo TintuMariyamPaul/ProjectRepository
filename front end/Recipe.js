@@ -11,7 +11,12 @@ function toggleEditForm(show = false) {
 }
 function displayRecipes() {
     fetch(apiUrl)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error fetching recipes: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(recipes => {
             const recipeList = document.getElementById('recipe-list-container');
             recipeList.innerHTML = '';
@@ -32,7 +37,8 @@ function displayRecipes() {
             }
         })
         .catch(err => console.error('Error displaying recipes:', err));
-} 
+}
+
 function addRecipe() {
     const newRecipe = getRecipeInput('add');
     if (!newRecipe) return;
@@ -42,12 +48,15 @@ function addRecipe() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newRecipe),
     })
-        .then(() => {
-            alert('Recipe added!');
-            resetForm('add-recipe-form');
-            displayRecipes();
-        })
-        .catch(err => console.error('Error adding recipe:', err));
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error adding recipe: ${response.status}`);
+        }
+        alert('Recipe added!');
+        resetForm('add-recipe-form');
+        displayRecipes();
+    })
+    .catch(err => console.error('Error adding recipe:', err));
 }
 function loadRecipeForEdit(id) {
     fetch(`${apiUrl}/${id}`)
@@ -96,6 +105,7 @@ function searchRecipes() {
 
     let query = `${apiUrl}?${title ? `title=${encodeURIComponent(title)}` : ''}`;
     if (category) query += `&category=${encodeURIComponent(category)}`;
+    if (query.endsWith('&')) query = query.slice(0, -1);
 
     fetch(query)
         .then(response => response.json())
