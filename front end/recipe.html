@@ -1,41 +1,88 @@
 <!DOCTYPE html>
 <html lang="en"> 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> kerala_cuisine </title>
     <style>
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
         }
-        .recipe-item {
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px 10px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        section {
+            margin: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        section h2 {
+            color: #007BFF;
+            margin-top: 0;
+        }
+        form label, form input, form select {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
             border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px 0;
             border-radius: 5px;
-            background-color: #f9f9f9;
         }
         button {
             background-color: #007BFF;
             color: white;
+            font-size: 1rem;
             border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
             cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
         }
         button:hover {
             background-color: #0056b3;
         }
-        #search-results, #recipe-list-container{
-            margin-top: 20px;
-        }
         .hidden {
             display: none;
         }
-        h1, h2, h3 {
-            color: #333;
+        .recipe-item {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+        .recipe-item h4 {
+            margin: 0;
+        }
+        .recipe-item p {
+            margin: 5px 0;
+        }
+        #recipe-list-container, #search-results-container {
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+            section {
+                padding: 15px;
+            }
         }
     
     </style>
@@ -44,66 +91,82 @@
     <h1>Kerala Cuisine Recipe Manager</h1>
     <section>
         <h2>Add or Edit a Recipe</h2>
-        <form id="recipe-form">
-            <label for="recipe-title">Title:</label>
-            <input type="text" id="recipe-title" required><br><br>
+        <form id="add-recipe-form">
+            <label for="add-title">Title:</label>
+        <input type="text" id="add-title" required>
 
-            <label for="category">Category:</label>
-            <select id="category" required>
-                <option value="">Select</option>
-                <option value="Vegetarian">Vegetarian</option>
-                <option value="Non-Vegetarian">Non-Vegetarian</option>
-            </select><br><br>
-            
-            <label for="ingredients">ingredients:</label>
-            <input type="text" id="ingredients"><br>
-            
-            <label for="steps">steps:</label>
-            <input type="text" id="steps"><br>
-            
-            <label for="cooking-time">cooking-time:</label>
-            <input type="number" id="cooking-time"><br>
-            
-            <label for="spice-level">spice-level(Mild,Medium,spicy):</label>
-            <input type="text" id="spice-level"><br>
-            
-            <label for="cooking-method">cooking-method:</label>
-            <input type="text" id="cooking-method">
-            
-            <button type="button" id="add-recipe-btn">Add Recipe</button>
-            <button type="button" id="edit-recipe-btn" class="hidden">Update Recipe</button>
-        </form>
-    </section>
-    <hr>
-
-    <section>
-        <h2>Search Recipes</h2>
-        <label for="search-title">Title:</label>
-        <input type="text" id="search-title"><br><br>
-
-        <label for="search-category">Category:</label>
-        <select id="search-category">
+        <label for="add-category">Category:</label>
+        <select id="add-category" required>
             <option value="">Select</option>
             <option value="Vegetarian">Vegetarian</option>
             <option value="Non-Vegetarian">Non-Vegetarian</option>
-        </select><br><br>
-        <button type="button" id="search-btn">Search</button>
-        <button type="button" id="display-all-btn">Show All Recipes</button>
-    </section>
+        </select>
+        <label for="add-ingredients">Ingredients:</label>
+        <input type="text" id="add-ingredients">
 
-    <hr>
-   
-    <section>
-        <h2>Recipe List</h2>
-        <div id="recipe-list-container"></div>
-    </section>
-    <hr>
+        <label for="add-steps">Steps:</label>
+        <input type="text" id="add-steps">
 
-    <section>
-        <h2>Search Results</h2>
-        <div id="search-results-container"></div>
-    </section>
+        <label for="add-cooking-time">Cooking Time:</label>
+        <input type="number" id="add-cooking-time">
 
-    <script src="Recipe.js"></script>
+        <label for="add-spice-level">Spice Level:</label>
+        <input type="text" id="add-spice-level">
+
+        <label for="add-cooking-method">Cooking Method:</label>
+        <input type="text" id="add-cooking-method">
+        <button type="button" id="add-recipe-btn">Add Recipe</button>
+    </form>
+
+    <form id="edit-recipe-form" class="hidden">
+        <label for="edit-title">Title:</label>
+        <input type="text" id="edit-title" required>
+        <label for="edit-category">Category:</label>
+        <select id="edit-category" required>
+            <option value="">Select</option>
+            <option value="Vegetarian">Vegetarian</option>
+            <option value="Non-Vegetarian">Non-Vegetarian</option>
+        </select>
+        <label for="edit-ingredients">Ingredients:</label>
+        <input type="text" id="edit-ingredients">
+
+        <label for="edit-steps">Steps:</label>
+        <input type="text" id="edit-steps">
+
+        <label for="edit-cooking-time">Cooking Time:</label>
+        <input type="number" id="edit-cooking-time">
+
+        <label for="edit-spice-level">Spice Level:</label>
+        <input type="text" id="edit-spice-level">
+        <label for="edit-cooking-method">Cooking Method:</label>
+        <input type="text" id="edit-cooking-method">
+
+        <button type="button" id="edit-recipe-btn">Update Recipe</button>
+    </form>
+</section>
+<section>
+    <h2>Search Recipes</h2>
+    <label for="search-title">Title:</label>
+    <input type="text" id="search-title">
+
+    <label for="search-category">Category:</label>
+    <select id="search-category">
+        <option value="">Select</option>
+        <option value="Vegetarian">Vegetarian</option>
+        <option value="Non-Vegetarian">Non-Vegetarian</option>
+    </select>
+    <button type="button" id="search-btn">Search</button>
+    <button type="button" id="display-all-btn">Show All Recipes</button>
+</section>
+<section>
+    <h2>Recipe List</h2>
+    <div id="recipe-list-container"></div>
+</section>
+<section>
+    <h2>Search Results</h2>
+    <div id="search-results-container"></div>
+</section>
+
+<script src="Recipe.js"></script>
 </body>
 </html>

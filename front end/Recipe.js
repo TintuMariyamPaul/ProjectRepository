@@ -6,9 +6,18 @@ function resetForm(formId) {
 }
 
 function toggleEditForm(show = false) {
-    document.getElementById('edit-recipe-form').classList.toggle('hidden', !show);
     document.getElementById('add-recipe-form').classList.toggle('hidden', show);
 }
+function toggleEditForm(isVisible) {
+    const editForm = document.getElementById('edit-recipe-form');
+    if (isVisible) {
+        editForm.classList.remove('hidden');
+    } else {
+        editForm.classList.add('hidden');
+    }
+}
+
+
 function displayRecipes() {
     fetch(apiUrl)
         .then(response => {
@@ -29,8 +38,8 @@ function displayRecipes() {
                             <h4>${recipe.title}</h4>
                             <p><strong>Category:</strong> ${recipe.category}</p>
                             <p><strong>Cooking Time:</strong> ${recipe.cookingTime} mins</p>
-                            <button onclick="loadRecipeForEdit(${recipe.id})">Edit</button>
-                            <button onclick="deleteRecipe(${recipe.id})">Delete</button>
+                            <button onclick="loadRecipeForEdit(${recipe.serialNumber})">Edit</button>
+                            <button onclick="deleteRecipe(${recipe.serialNumber})">Delete</button>
                         </div>`;
                     recipeList.innerHTML += recipeItem;
                 });
@@ -42,6 +51,7 @@ function displayRecipes() {
 function addRecipe() {
     const newRecipe = getRecipeInput('add');
     if (!newRecipe) return;
+    console.log('New Recipe:', newRecipe);
 
     fetch(apiUrl, {
         method: 'POST',
@@ -58,11 +68,19 @@ function addRecipe() {
     })
     .catch(err => console.error('Error adding recipe:', err));
 }
-function loadRecipeForEdit(id) {
-    fetch(`${apiUrl}/${id}`)
-        .then(response => response.json())
+
+function loadRecipeForEdit(serialNumber) {
+    console.log('Edit Recipe Serial Number:', serialNumber);
+    fetch(`${apiUrl}/${serialNumber}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error fetching recipe: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(recipe => {
-            editingRecipeId = id;
+            console.log('Loaded Recipe:', recipe);
+            editingRecipeId = serialNumber;
             document.getElementById('edit-title').value = recipe.title;
             document.getElementById('edit-category').value = recipe.category;
             document.getElementById('edit-ingredients').value = recipe.ingredients;
@@ -74,6 +92,7 @@ function loadRecipeForEdit(id) {
         })
         .catch(err => console.error('Error loading recipe for edit:', err));
 }
+
 function updateRecipe() {
     const updatedRecipe = getRecipeInput('edit');
     if (!updatedRecipe) return;
@@ -83,7 +102,10 @@ function updateRecipe() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedRecipe),
     })
-        .then(() => {
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error updating recipe: ${response.status}`);
+            }
             alert('Recipe updated!');
             resetForm('edit-recipe-form');
             toggleEditForm(false);
@@ -91,28 +113,43 @@ function updateRecipe() {
         })
         .catch(err => console.error('Error updating recipe:', err));
 }
-function deleteRecipe(id) {
-    fetch(`${apiUrl}/${id}`, { method: 'DELETE' })
-        .then(() => {
+
+function deleteRecipe(serialNumber) {
+    console.log('Delete Recipe Serial Number:', serialNumber);
+    fetch(`${apiUrl}/${serialNumber}`, {
+        method: 'DELETE',
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error deleting recipe: ${response.status}`);
+            }
             alert('Recipe deleted!');
             displayRecipes();
         })
         .catch(err => console.error('Error deleting recipe:', err));
 }
+
 function searchRecipes() {
     const title = document.getElementById('search-title').value.trim();
     const category = document.getElementById('search-category').value;
 
-    let query = `${apiUrl}?${title ? `title=${encodeURIComponent(title)}` : ''}`;
-    if (category) query += `&category=${encodeURIComponent(category)}`;
-    if (query.endsWith('&')) query = query.slice(0, -1);
+    let query = `${apiUrl}?`;
+    if (title) query += `title=${encodeURIComponent(title)}`;
+    if (category) query += `${title ? '&' : ''}category=${encodeURIComponent(category)}`;
+    query = query.slice(0, -1);
+    console.log('Search Query:', query);
 
     fetch(query)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error searching recipes: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(recipes => {
+            console.log('Search Results:', recipes);
             const searchList = document.getElementById('search-results-container');
-            searchList.innerHTML = ''; 
-
+            searchList.innerHTML = '';
             if (recipes.length === 0) {
                 searchList.innerHTML = '<p>No recipes found.</p>';
             } else {
@@ -120,9 +157,9 @@ function searchRecipes() {
                     const result = `
                         <div class="recipe-item">
                             <h4>${recipe.title}</h4>
-                            <p><strong>Category:</strong> ${recipe.category}</p> 
-                            <p><strong>Cooking Time:</strong> ${recipe.cookingTime} min</p>
-                            <p><strong>Spice Level:</strong> ${recipe.spiceLevel}</p> 
+                            <p><strong>Category:</strong> ${recipe.category}</p>
+                            <p><strong>Cooking Time:</strong> ${recipe.cookingTime} mins</p>
+                            <p><strong>Spice Level:</strong> ${recipe.spiceLevel}</p>
                             <p><strong>Cooking Method:</strong> ${recipe.cookingMethod}</p>
                         </div>`;
                     searchList.innerHTML += result;
@@ -131,6 +168,7 @@ function searchRecipes() {
         })
         .catch(err => console.error('Error searching recipes:', err));
 }
+
 function getRecipeInput(prefix) {
     const title = document.getElementById(`${prefix}-title`).value.trim();
     const category = document.getElementById(`${prefix}-category`).value;
@@ -147,7 +185,10 @@ function getRecipeInput(prefix) {
 
     return { title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod };
 }
+
 document.getElementById('add-recipe-btn').addEventListener('click', addRecipe);
 document.getElementById('edit-recipe-btn').addEventListener('click', updateRecipe);
 document.getElementById('search-btn').addEventListener('click', searchRecipes);
+document.getElementById('display-all-btn').addEventListener('click', displayRecipes);
+
 displayRecipes();

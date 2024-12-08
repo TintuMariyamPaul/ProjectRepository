@@ -40,10 +40,9 @@ app.post('/recipes', async (req, res) => {
     }
 });
 
-app.get('/search',async (req, res) => {
+app.get('/search', async (req, res) => {
     try {
         const { title, category } = req.query;
-
         let query = 'SELECT * FROM recipes WHERE 1=1';
         const params = [];
 
@@ -56,18 +55,14 @@ app.get('/search',async (req, res) => {
             params.push(category);
         }
 
-        const [results] = await db.query(query, params);
-
-        if (results.length === 0) {
-            return res.status(404).json({ message: 'No recipes found matching your criteria.' });
-        }
-
-        res.status(200).json(results);
+        const [rows] = await pool.query(query, params);
+        res.json(rows);
     } catch (err) {
-        console.error('Query error:', err);
-        res.status(500).json({ error: 'Failed to search recipes' });
+        console.error('Error fetching recipes:', err);
+        res.status(500).json({ error: 'Failed to fetch recipes' });
     }
 });
+
 
 app.put('/recipes/:serialNumber', async (req, res) => {
         const { serialNumber } = req.params;
@@ -123,19 +118,22 @@ app.put('/recipes/:serialNumber', async (req, res) => {
 });
 
 app.delete('/recipes/:serialNumber', async (req, res) => {
-    const { serialNumber } = req.params;
-    
     try {
-        const [result] = await db.query('DELETE FROM recipes WHERE serialNumber = ?', [serialNumber]);
+        const { serialNumber } = req.params;
+        const query = 'DELETE FROM recipes WHERE serialNumber = ?';
+        const [result] = await db.query(query, [serialNumber]);
+
         if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Recipe not found.' });
+            return res.status(404).json({ message: 'Recipe not found' });
         }
-        res.status(200).send({ message: 'Recipe deleted and IDs reordered.' });
-    }  catch (error) {
-        console.error('Error deleting and reordering recipes:', error);
-        res.status(500).send({ error: 'Failed to delete and reorder recipes.' });
+
+        res.status(200).json({ message: 'Recipe deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting recipe:', error);
+        res.status(500).json({ error: 'Failed to delete recipe.' });
     }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
