@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('./db');
 
-const app = express();
+const app = express(); 
 const cors = require('cors');
 app.use(cors());
 app.use(bodyParser.json());
@@ -14,10 +14,30 @@ app.get('/', async (req, res) => {
 
 app.get('/recipes', async (req, res) => {
     try {
-        const [results] = await db.query('SELECT * FROM recipes ORDER BY serialNumber');
+        const { title, category, limit, offset } = req.query;
+
+        let query = 'SELECT * FROM recipes WHERE 1=1';
+        const params = [];
+
+        if (title) {
+            query += ' AND title LIKE ?';
+            params.push(`%${title}%`);
+        }
+        if (category) {
+            query += ' AND category = ?';
+            params.push(category);
+        }
+
+        const parsedLimit = parseInt(limit, 10) || 10;
+        const parsedOffset = parseInt(offset, 10) || 0;
+
+        query += ' LIMIT ? OFFSET ?';
+        params.push(parsedLimit, parsedOffset);
+
+        const [results] = await db.query(query, params);
         res.status(200).json(results);
     } catch (err) {
-        console.error('Query error:', err);
+        console.error('Error fetching recipes:', err.message);
         res.status(500).json({ error: 'Failed to fetch recipes' });
     }
 });
@@ -40,72 +60,68 @@ app.post('/recipes', async (req, res) => {
     }
 });
 
-app.get('/search', async (req, res) => {
+app.get('/recipes/:serialNumber', async (req, res) => {
     try {
-        const { title, category } = req.query;
-        let query = 'SELECT * FROM recipes WHERE 1=1';
-        const params = [];
+        const { serialNumber } = req.params;
+        const [results] = await db.query('SELECT * FROM recipes WHERE serialNumber = ?', [serialNumber]);
 
-        if (title) {
-            query += ' AND title LIKE ?';
-            params.push(`%${title}%`);
-        }
-        if (category) {
-            query += ' AND category = ?';
-            params.push(category);
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Recipe not found.' });
         }
 
-        const [rows] = await pool.query(query, params);
-        res.json(rows);
+        res.status(200).json(results[0]);
     } catch (err) {
-        console.error('Error fetching recipes:', err);
-        res.status(500).json({ error: 'Failed to fetch recipes' });
+        console.error('Error fetching recipe:', err.message);
+        res.status(500).json({ error: 'Failed to fetch recipe.' });
     }
 });
 
-
 app.put('/recipes/:serialNumber', async (req, res) => {
-        const { serialNumber } = req.params;
-        const { title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod } = req.body;
-        if (!title && !category && !ingredients && !steps && !cookingTime && !spiceLevel && !cookingMethod){
-            return res.status(400).json({ error: 'need to update the feild' });
-        }
+    const { serialNumber } = req.params;
+    const { title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod } = req.body;
+
+    if (!title && !category && !ingredients && !steps && !cookingTime && !spiceLevel && !cookingMethod) {
+        return res.status(400).json({ error: 'At least one field is required to update.' });
+    }
+
     let query = 'UPDATE recipes SET ';
     const updates = [];
     const params = [];
-    try{
-        if (title) {
-            updates.push('title = ?');
-            params.push(title);
-        }
-        if (category) {
-            updates.push('category = ?');
-            params.push(category);
-        }
-        if (ingredients) {
-            updates.push('ingredients = ?');
-            params.push(ingredients);
-        }
-        if (steps) {
-            updates.push('steps = ?');
-            params.push(steps);
-        }
-        if (cookingTime) {
-            updates.push('cookingTime = ?');
-            params.push(cookingTime);
-        }
-        if (spiceLevel) {
-            updates.push('spiceLevel = ?');
-            params.push(spiceLevel);
-        }
-        if (cookingMethod) {
-            updates.push('cookingMethod = ?');
-            params.push(cookingMethod);
-        }
-        query += updates.join(', ') + ' WHERE serialNumber = ?';
-        params.push(serialNumber);
 
+    if (title) {
+        updates.push('title = ?');
+        params.push(title);
+    }
+    if (category) {
+        updates.push('category = ?');
+        params.push(category);
+    }
+    if (ingredients) {
+        updates.push('ingredients = ?');
+        params.push(ingredients);
+    }
+    if (steps) {
+        updates.push('steps = ?');
+        params.push(steps);
+    }
+    if (cookingTime) {
+        updates.push('cookingTime = ?');
+        params.push(cookingTime);
+    }
+    if (spiceLevel) {
+        updates.push('spiceLevel = ?');
+        params.push(spiceLevel);
+    }
+    if (cookingMethod) {
+        updates.push('cookingMethod = ?');
+        params.push(cookingMethod);
+    }
+
+    query += updates.join(', ') + ' WHERE serialNumber = ?';
+    params.push(serialNumber);
+    try {
         const [result] = await db.query(query, params);
+
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Recipe not found.' });
         }
@@ -121,10 +137,11 @@ app.delete('/recipes/:serialNumber', async (req, res) => {
     try {
         const { serialNumber } = req.params;
         const query = 'DELETE FROM recipes WHERE serialNumber = ?';
+
         const [result] = await db.query(query, [serialNumber]);
 
         if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Recipe not found' });
+            return res.status(404).json({ message: 'Recipe not found.' });
         }
 
         res.status(200).json({ message: 'Recipe deleted successfully' });
