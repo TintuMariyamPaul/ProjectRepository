@@ -152,8 +152,8 @@ app.delete('/recipes/:serialNumber', async (req, res) => {
 });
 
 
-const server = app.listen(process.env.PORT || 3000, () => {
-    console.log(`Server is running on http://localhost:${process.env.PORT || 3000}`);
+const server = app.listen(process.env.PORT || 3001, '0.0.0.0', () => {
+    console.log(`Server is running on http://0.0.0.0:${process.env.PORT || 3000}`);
 });
 
 module.exports = { app, server };
