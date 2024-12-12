@@ -1,2 +1,25 @@
 mysql
+--->sudo service mysql restart
+--->mysql -u root -p
+ # CREATE DATABASE 
+ CREATE DATABASE Kerala_cuisine;
+ USE Kerala_cuisine;
 
+ # CREATE TABLE
+CREATE TABLE recipes (
+    serialNumber INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    category VARCHAR(100),
+    ingredients TEXT,
+    steps TEXT,
+    cookingTime INT,
+    spiceLevel VARCHAR(50),
+    cookingMethod VARCHAR(100)
+);
+# INSERT VALUES
+INSERT INTO recipes (title, category, ingredients, steps, cookingTime, spiceLevel, cookingMethod)
+VALUES
+    ('Avial', 'Vegetarian', 'Coconut, vegetables, curd', 'Mix everything and cook', 40, 'Medium', 'Boiling')
+
+# View Table Data
+SELECT * FROM recipes;
