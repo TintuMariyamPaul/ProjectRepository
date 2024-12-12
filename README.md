@@ -10,7 +10,7 @@ Assignment Title: Kerala Cusine Recipe Management App
 
 # Kerala Cusine Recipe Management App
   
-  # INTRODUCTION
+  # Introduction
 
 The Kerala Cuisine Recipe Management App is a comprehensive web application created to assist users in managing and discovering recipes related to Kerala cuisine. The app allows users to add, view, search for, and delete recipes, emphasizing the classification of them as vegetarian or non-vegetarian. It includes information like cooking duration, spice intensity, ingredients, and preparation techniques.
 
