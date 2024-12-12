@@ -14,7 +14,6 @@ Assignment Title: Kerala Cusine Recipe Management App
 
 The Kerala Cuisine Recipe Management App is a comprehensive web application created to assist users in managing and discovering recipes related to Kerala cuisine. The app allows users to add, view, search for, and delete recipes, emphasizing the classification of them as vegetarian or non-vegetarian. It includes information like cooking duration, spice intensity, ingredients, and preparation techniques.
 
-
   # Project Overview
 The Kerala Cuisine Recipe Management App is a full-stack web application designed to allow users to manage recipes. Users can:
 Add, view, search, and delete recipes.
@@ -135,6 +134,18 @@ The test code validates the backend functionality of the Kerala Cuisine Recipe M
         -> Verifies data flow between API routes, middleware, and the database.
         -> Ensures proper handling of success (201/200) and error cases (404).
 
+# Run the Project
+1. Node.js Installed
+2. Set up a MySQL server to store recipe data. (MYSQL Workbench)
+3. API Testing Tool: Installed a tool like Postman to test backend APIs.
+4. Clone the Repository-git clone https://github.com/TintuMariyamPaul/ProjectRepository.git
+5. Installed Required Dependencies 
+6. Set Up Environment Variables- created env file  and db.js in the backend to connect with database
+7. Initialize the Database
+8. Start the Backend Server-node server.js
+9. Set Up the Frontend-Navigated to the frontend directory and open recipe.html in preferred browser.
+10. Test APIs
+
    # Conclusion
    
 The Kerala Cuisine Recipe Management App effectively showcases the combination of backend and frontend technologies to provide a practical, user-friendly platform for organizing recipes. By effectively utilizing Node.js, Express, MySQL, and JavaScript, the application accomplishes dynamic and dependable functions like adding, searching, and removing recipes.
@@ -143,7 +154,16 @@ The initiative emphasizes the significance of clean code structure, API creation
 
 
 # Reference
--W3Schools. (2024). HTML Forms. Available at: https://www.w3schools.com/html/html_forms.asp
--Ahmed,J.,2023. CRUD REST API with Node.js, Express.js, and PostgressSQL.[online] DEV Community.https://dev.to/justahmed99/crud-rest-api-with-nodejs-expressjs-and-postgresql-57b2 
+- W3Schools. (2024). HTML Forms. Available at: https://www.w3schools.com/html/html_forms.asp
+
+- Ahmed,J.,2023. CRUD REST API with Node.js, Express.js, and PostgressSQL.[online] DEV Community.https://dev.to/justahmed99/   crud-rest-api-with-nodejs-expressjs-and-postgresql-57b2 
+
+- Express.js (n.d.). Router.use. Available at: https://expressjs.com/en/5x/api.html#router.use
+- The Traversy Media, (2023). Node.js & Express - CRUD Routes Tutorial. Available at: https://youtu.be/XwinUaMmg-U?si=hv2bGVfuVmziM7sa
+
+
+
+
+
 
 
