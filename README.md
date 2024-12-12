@@ -1,8 +1,57 @@
-Project Overview
+1. # Project Overview
 The Kerala Cuisine Recipe Management App is a full-stack web application designed to allow users to manage recipes. Users can:
 Add, view, search, and delete recipes.
 Categorize recipes as vegetarian or non-vegetarian.
 Include detailed information such as cooking time, spice levels, and cooking methods.
+2. # Key Features
+Recipe Management
+-> Add new recipes to the database
+-> View existing recipes
+-> Search and filter recipes
+-> Delete recipes
+Categorization
+-> Categorize recipes as vegetarian or non-vegetarian
+Detailed Recipe Information
+-> Title
+-> Steps
+-> Cooking time
+-> Spice levels
+-> Cooking methods
+# # Technology Stack
+# Frontend
+HTML:
+-> Used for creating recipe input forms
+-> Displays recipe containers
+JavaScript:
+-> fetchRecipes(): Retrieves and displays all recipes
+-> searchRecipes(): Filters recipes based on user input
+-> addRecipe(): Sends new recipes to the backend
+-> deleteRecipe(id): Removes recipes from the backend
+# Backend
+-> Node.js: Server-side runtime environment
+-> Express.js: Web application framework
+-> MySQL: Relational database management system
+# API Endpoints
+Endpoint                     Method    Description
+/recipes ->                   GET       Fetches all recipes from the database
+/recipes ->                   POST      Validates and inserts a new recipe
+/search  ->                   GET       Retrieves recipes based on search filters
+/recipes/:serialNumber        DELETE     Deletes a specific recipe by SerialNumber
+/recipes/:serialNumber        PUT        Edit a specific recipe by SerialNumber
+
+# # Project Setup
+Backend Configuration
+
+Database: MySQL
+Connection: mysql.createConnection
+Port: 3000
+Authentication: Root user login with password
+
+# # Database Schema
+Table Name: recipes
+Columns:
+Recipe details 
+
 # ProjectRepository
 created HTML file
 created base javascript file
